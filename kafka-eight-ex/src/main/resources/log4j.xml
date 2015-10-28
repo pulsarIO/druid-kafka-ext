@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <!-- CONSOLE Appender -->
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="Threshold" value="INFO" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c - %m%n" />
+        </layout>	
+    </appender>
+
+    <!-- FILE Appender -->
+    <appender name="asynch-file" class="org.apache.log4j.AsyncAppender">
+        <param name="Threshold" value="INFO" />
+        <param name="locationInfo" value="false" />
+        <appender-ref ref="out-file" />
+    </appender>
+
+    <appender name="out-file" class="org.apache.log4j.RollingFileAppender">
+        <param name="Threshold" value="INFO" />
+        <param name="file" value="/opt/druid/log/druid-kafka.log" />
+        <param name = "MaxFileSize" value = "50MB"/>
+        <param name = "MaxBackupIndex" value = "100"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"	value="%d{ISO8601} %-5p [%t] %c - %m%n" />
+        </layout>
+    </appender>
+
+    <appender name="emitterappender" class="org.apache.log4j.RollingFileAppender">
+        <param name="Threshold" value="INFO" />
+        <param name="file" value="/opt/druid/log/emitter-kafka.log" />
+        <param name = "MaxFileSize" value = "50MB"/>
+        <param name = "MaxBackupIndex" value = "100"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c - %m%n" />
+        </layout>
+    </appender>    
+
+    <logger name="com.metamx.emitter.core.LoggingEmitter" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="emitterappender" />
+    </logger>
+
+    <!-- ServerView-related stuff is way too chatty -->
+    <logger name="io.druid.client.BatchServerInventoryView">
+        <level value="warn"/>
+    </logger>
+    <logger name="io.druid.curator.inventory.CuratorInventoryManager">
+        <level value="warn"/>
+    </logger>
+
+    <!-- Setup the Root category -->
+    <root>
+        <priority value="info" />
+        <appender-ref ref="asynch-file" />
+        <appender-ref ref="CONSOLE" />
+    </root>
+</log4j:configuration>
